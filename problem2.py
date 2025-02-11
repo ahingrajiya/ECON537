@@ -29,10 +29,10 @@ print(ar2_fit.summary())
 residuals_ar1 = df["DGS10"].to_numpy()[1:] - ar1_fit.fittedvalues
 residuals_ar2 = df["DGS10"].to_numpy()[2:] - ar2_fit.fittedvalues
 
-qtest_ar1 = sm.stats.acorr_ljungbox(residuals_ar1, lags=[1], return_df=True)
+qtest_ar1 = sm.stats.acorr_ljungbox(residuals_ar1, lags=[10], return_df=True)
 print("AR(1) Model Q-Test")
 print(qtest_ar1)
-qtest_ar2 = sm.stats.acorr_ljungbox(residuals_ar2, lags=[2], return_df=True)
+qtest_ar2 = sm.stats.acorr_ljungbox(residuals_ar2, lags=[10], return_df=True)
 print("AR(2) Model Q-Test")
 print(qtest_ar2)
 
@@ -64,6 +64,9 @@ print("F-Statistic for AR(1): ", f_stat)
 f_crit = stats.f.ppf(0.95, 2, len(df) - 4)
 print("Critical F-Value for AR(1): ", f_crit)
 
+p_value = 1 - stats.f.cdf(f_stat, 2, len(df) - 4)
+print("P-Value for AR(1): ", p_value)
+
 
 full_model = smt.AutoReg(df['DGS10'], lags=2)
 full_model_result = full_model.fit()
@@ -84,14 +87,16 @@ print("Full Model RSS: ", full_model_rss)
 print("Data 1 Model RSS: ", data_1_model_rss)
 print("Data 2 Model RSS: ", data_2_model_rss)
 
-f_stat = ((full_model_rss - (data_1_model_rss + data_2_model_rss)) / 2) / ((data_1_model_rss + data_2_model_rss) / (len(df) - 4))
+f_stat = ((full_model_rss - (data_1_model_rss + data_2_model_rss)) / 3) / ((data_1_model_rss + data_2_model_rss) / (len(df) - 6))
 print("F-Statistic for AR(2): ", f_stat)
 
-f_crit = stats.f.ppf(0.95, 2, len(df) - 4)
+f_crit = stats.f.ppf(0.95, 3, len(df) - 6)
 print("Critical F-Value for AR(2): ", f_crit)
 
+p_value = 1 - stats.f.cdf(f_stat, 3, len(df) - 6)
+print("P-Value for AR(2): ", p_value)
 
-train_size = int(len(df) * 0.75)  
+train_size = int(len(df) * 0.4)  
 train, test = df['DGS10'][:train_size], df['DGS10'][train_size:]
 
 err_ar1 = []
